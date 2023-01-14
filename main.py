@@ -1,25 +1,16 @@
-import tkinter
+import tkinter as tk
 from tkinter import Label, StringVar, Entry, Frame, Button
-from tkinter.constants import DISABLED, NORMAL
 
 #Sudoku Solver -----------------------------------------
-M = 9
-def puzzle(a):
-    for i in range(M):
-        for j in range(M):
-            print(a[i][j],end = " ")
-        print()
-        
 def solve(grid, row, col, num):
     for x in range(9):
         if grid[row][x] == num:
             return False
-             
+
     for x in range(9):
         if grid[x][col] == num:
             return False
- 
- 
+
     startRow = row - row % 3
     startCol = col - col % 3
     for i in range(3):
@@ -28,21 +19,19 @@ def solve(grid, row, col, num):
                 return False
     return True
  
-def Suduko(grid, row, col):
- 
-    if (row == M - 1 and col == M):
+def sudoku(grid, row, col):
+    if row == 8 and col == 9:
         return True
-    if col == M:
+    if col == 9:
         row += 1
         col = 0
     if grid[row][col] > 0:
-        return Suduko(grid, row, col + 1)
-    for num in range(1, M + 1, 1): 
-     
+        return sudoku(grid, row, col + 1)
+
+    for num in range(1, 10): 
         if solve(grid, row, col, num):
-         
             grid[row][col] = num
-            if Suduko(grid, row, col + 1):
+            if sudoku(grid, row, col + 1):
                 return True
         grid[row][col] = 0
     return False
@@ -50,16 +39,16 @@ def Suduko(grid, row, col):
 #GUI ---------------------------------------------------
 bgcolor = '#25b8ea'
 version = 1.0
-app = tkinter.Tk()
+app = tk.Tk()
 app.config(bg=bgcolor)
-app.geometry('700x700')
+app.geometry('900x700')
 app.title(f'Sudoku Solver v{version}')
 app.resizable(False, False)
 
-canvas = tkinter.Canvas(app, width=700, height=700, bg=bgcolor)
+canvas = tk.Canvas(app, width=900, height=700, bg=bgcolor)
 canvas.place(x=0, y=0)
 
-titlelbl = tkinter.Label(app, text = f'Sudoku Solver v{version}', bg=bgcolor, font='Arial 35 bold', fg='white').grid(row=0, column=0, columnspan=10)
+titlelbl = tk.Label(app, text = f'Sudoku Solver v{version}', bg=bgcolor, font='Arial 35 bold', fg='white').grid(row=0, column=0, columnspan=10)
 
 rows = 9
 columns = 9
@@ -69,43 +58,20 @@ cellheight = 50
 cells = {}
 inputs = []
 
-def buttonclear():
+def button_clear():
     for x in inputs:
         r = len(x.get())
         for t in range(r):
             x.delete(r - (t+1))
-
-#btnsolve
-def buttonsolve():
-    '''0 means the cells where no value is assigned'''
-    grid = []
-    grid1 = []
-    grid2 = []
-    grid3 = []
-    grid4 = []
-    grid5 = []
-    grid6 = []
-    grid7 = []
-    grid8 = []
-    grid9 = []
-    
-    tally = 8
-    for x in inputs:
-        tally += 1
+        
+def button_solve():
+    grid = [[0] * 9 for _ in range(9)]
+    for i, x in enumerate(inputs):
         t = x.get()
-        if t == '':
-            gridder = f"grid{str(tally//9)}.append(0)"
-            exec(gridder)
-        else:
-            gridder = f"grid{str(tally//9)}.append(int(t))"
-            exec(gridder)
-            
-    for l in range(1,10):
-        grid_appender = f"grid.append(grid{l})"
-        exec(grid_appender)
-            
-    if (Suduko(grid, 0, 0)):
-        buttonclear()
+        if t:
+            grid[i // 9][i % 9] = int(t)
+    if sudoku(grid, 0, 0):
+        button_clear()
         puzzle_placement = 0
         for v in range(9):
             for c in range(9):
@@ -119,20 +85,17 @@ for row in range(1,10):
     for column in range(1,10):
         selected = False
         
-        if row == 4 or row == 5 or row == 6:
-            if column == 4 or column == 5 or column == 6:
-                cell = Frame(app, bg='black', highlightbackground="black", highlightcolor="black", highlightthickness=2, width=50, height=50,  padx=3,  pady=3, background='black')
-                selected = True
+        if row in [4,5,6] and column in [4,5,6]:
+            cell = Frame(app, bg='black', highlightbackground="black", highlightcolor="black", highlightthickness=2, width=50, height=50,  padx=3,  pady=3, background='black')
+            selected = True
                 
-        if row == 1 or row == 2 or row == 3 or row == 7 or row == 8 or row == 9:
-            if column == 1 or column == 2 or column == 3:
-                cell = Frame(app, bg='black', highlightbackground="black", highlightcolor="black", highlightthickness=2, width=50, height=50,  padx=3,  pady=3, background='black')
-                selected = True
+        if row in [1,2,3,7,8,9] and column in [1,2,3]:
+            cell = Frame(app, bg='black', highlightbackground="black", highlightcolor="black", highlightthickness=2, width=50, height=50,  padx=3,  pady=3, background='black')
+            selected = True
                 
-        if row == 1 or row == 2 or row == 3 or row == 7 or row == 8 or row == 9:
-            if column == 7 or column == 8 or column == 9:
-                cell = Frame(app, bg='black', highlightbackground="black", highlightcolor="black", highlightthickness=2, width=50, height=50,  padx=3,  pady=3, background='black')
-                selected = True
+        if row in [1,2,3,7,8,9] and column in [7,8,9]:
+            cell = Frame(app, bg='black', highlightbackground="black", highlightcolor="black", highlightthickness=2, width=50, height=50,  padx=3,  pady=3, background='black')
+            selected = True
                 
         if selected == False:
             cell = Frame(app, bg='black', highlightbackground="blue", highlightcolor="blue", highlightthickness=2, width=50, height=50,  padx=3,  pady=3, background='black')
@@ -142,15 +105,14 @@ for row in range(1,10):
         v = Entry(cells[row,column], width=3)
         v.pack()
         inputs.append(v)
-        
-solvebtntext = StringVar()
-clearbtntext = StringVar()
 
-solvebtn = tkinter.Button(app, textvariable=solvebtntext, font='Arial 15 bold', bd=0, bg='white', command=buttonsolve)
+solvebtntext, clearbtntext = StringVar(), StringVar()
+
+solvebtn = tk.Button(app, textvariable=solvebtntext, font='Arial 15 bold', bd=0, bg='white', command=button_solve)
 solvebtntext.set("Solve")
 solvebtn.grid(padx=30,pady=0)
 
-clearbtn = tkinter.Button(app, textvariable=clearbtntext, font='Arial 15 bold', bd=0, bg='white', command=buttonclear)
+clearbtn = tk.Button(app, textvariable=clearbtntext, font='Arial 15 bold', bd=0, bg='white', command=button_clear)
 clearbtntext.set("Clear Board")
 clearbtn.grid(padx=30,pady=30)
 
