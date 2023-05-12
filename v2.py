@@ -10,9 +10,9 @@ def solve(grid, row, col, num):
             return False
 
     startRow, startCol = row - row % 3, col - col % 3
-    for i in range(3):
-        for j in range(3):
-            if grid[i + startRow][j + startCol] == num:
+    for y in range(3):
+        for x in range(3):
+            if grid[y + startRow][x + startCol] == num:
                 return False
     return True
  
@@ -46,24 +46,21 @@ canvas.place(x=0, y=0)
 
 titlelbl = tk.Label(app, text = f'Sudoku Solver v1.1', bg=bgcolor, font='Arial 35 bold', fg='white').place(x=100, y=20)
 
-rows = 9
-columns = 9
-cellwidth = 50
-cellheight = 50
-
-cells = {}
-inputs = []
+rows, columns, cellwidth, cellheight = 9, 9, 50, 50
+cells, inputs = {}, []
 
 def button_clear():
     for x in inputs:
-        r = len(x.get())
-        for t in range(r):
-            x.delete(r - (t+1))
+        for _, r in enumerate(x.get()):
+            x.delete(0)
         
 def button_solve():
     grid = [[0] * 9 for _ in range(9)]
     for i, x in enumerate(inputs):
         t = x.get()
+        if len(t) > 1:
+            print("Number should only be 1 digit.")
+            return
         if t:
             try:
                 grid[i // 9][i % 9] = int(t)
@@ -71,12 +68,12 @@ def button_solve():
                 print("Please only use numbers.")
                 return
     
-    if sudoku_solver(grid, 0, 0):
+    if sudoku(grid, 0, 0):
         button_clear()
         puzzle_placement = 0
-        for v in range(9):
-            for c in range(9):
-                inputs[puzzle_placement].insert('end',grid[v][c])
+        for y in range(9):
+            for x in range(9):
+                inputs[puzzle_placement].insert('end',grid[y][x])
                 puzzle_placement += 1
     else:
         print("Solution does not exist.")
